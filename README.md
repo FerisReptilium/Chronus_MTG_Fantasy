@@ -1,18 +1,56 @@
-# CHRONUS Portal v3
+# CHRONUS MTG Fantasy
 
-Portal online para a ficha CHRONUS. O editor preserva a ficha original e adiciona autenticação, campanha, salvamento em nuvem, autosave, recuperação local e armazenamento privado de arte.
+Portal web da ficha CHRONUS — Magic: The Gathering Fantasy RPG.
 
-## Ordem de instalação
-1. No Supabase, abra SQL Editor e execute `supabase.sql` em um projeto limpo.
-2. Em Authentication > Providers, habilite Email. Para testes, você pode desabilitar a confirmação de e-mail; em produção, prefira confirmação.
-3. Crie `.env.local` com `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (ou publishable key). Nunca use `service_role` no navegador.
-4. `npm install`
-5. `npm run dev`
-6. Entre/crie uma conta. O mestre cria a campanha e fornece o código de 8 caracteres.
-7. Cada jogador cria sua própria conta e usa o código para entrar. A campanha limita a 10 jogadores.
-8. O mestre abre Jogadores para acessar as fichas existentes.
-9. A arte do personagem fica no bucket privado `character-art` e é exibida por URL assinada.
-10. Na Vercel, configure as mesmas variáveis e faça o deploy. Em Supabase Auth > URL Configuration, adicione a URL do site e o redirect da Vercel.
+A ficha visual permanece em `index.html`; a lógica do portal está em `src/app.js` e o complemento visual em `src/style.css`.
 
-## Salvamento
-A ficha é salva localmente imediatamente como contingência e enviada ao Supabase com debounce de 700 ms. O topo mostra `Salvando…`, `Salvo HH:MM:SS` ou `Erro ao salvar`. O registro é um `upsert` por `(campaign_id,user_id)`, impedindo duplicatas.
+## Recursos
+- Autenticação Supabase por e-mail/senha.
+- Link mágico por e-mail.
+- Criação de campanhas pelo mestre.
+- Código de convite de 8 caracteres.
+- Limite de 10 jogadores por campanha.
+- Uma ficha por jogador em cada campanha.
+- Autosave com debounce de 700 ms.
+- Backup imediato em LocalStorage.
+- Salvamento no Supabase por `(campaign_id, user_id)`.
+- Atualização em tempo real da própria ficha.
+- Rolagem de testes CHRONUS com abordagem, personalidade, habilidade e Determinação.
+- Registro de rolagens em `dice_logs`.
+- Importação/exportação JSON.
+- Arte do personagem em bucket privado `character-art`.
+- Temas de mana: Branco, Azul, Preto, Vermelho, Verde e Artefato/Incolor.
+- Aba de Background & Diário.
+
+## Configuração Supabase
+1. Crie/abra o projeto Supabase correto.
+2. Execute `supabase.sql` no SQL Editor.
+3. Em Authentication, habilite Email.
+4. Copie `.env.example` para `.env.local`.
+5. Preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (ou publishable key).
+6. Nunca coloque `service_role` ou Secret Key no navegador.
+7. Em Authentication > URL Configuration, configure a URL local e a URL da Vercel.
+
+## Desenvolvimento
+```bash
+npm install
+npm run dev
+```
+
+Build de produção:
+```bash
+npm run build
+npm run preview
+```
+
+## Vercel
+Configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` no projeto Vercel e faça o deploy.
+
+## Modelo de dados
+- `campaigns`: campanhas e códigos de convite.
+- `campaign_members`: membros e papel de mestre/jogador.
+- `characters`: ficha completa em JSONB.
+- `dice_logs`: histórico de rolagens.
+- `character-art`: bucket privado para retratos.
+
+A ficha é salva localmente antes do envio à nuvem para reduzir risco de perda de dados.
