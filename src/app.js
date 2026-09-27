@@ -300,7 +300,7 @@ async function joinCampaign(){
 
 async function showMasterPanel(){
   if(!state.campaign||state.campaign.role!=='mestre')return;
-  const {data,error}=await supabase.from('campaign_members').select('user_id,role,created_at,profiles:user_id(email)').eq('campaign_id',state.campaign.id);
+  const {data,error}=await supabase.from('campaign_members').select('user_id,role,created_at').eq('campaign_id',state.campaign.id);
   const list=$('playersList'); if(error){list.textContent=error.message;return;}
   const ids=(data||[]).map(x=>x.user_id);
   const {data:chars}=await supabase.from('characters').select('user_id,character_name,updated_at').eq('campaign_id',state.campaign.id).in('user_id',ids);
@@ -392,8 +392,7 @@ async function magicLink(){
 
 async function bootUser(user){
   state.user=user;
-  const {data:profile}=await supabase.from('profiles').select('*').eq('id',user.id).maybeSingle();
-  state.profile=profile||{role:'jogador'};
+  state.profile={role:user.user_metadata?.role || 'jogador'};
   $('portalGate').classList.add('portal-hidden');$('appShell').classList.remove('portal-hidden');
   $('userEmailLabel').textContent=user.email||'';
   setSaveStatus('● Conectado','saved');
